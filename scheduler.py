@@ -25,25 +25,39 @@ class RateMonotonic:
         task_begin_time = 0
         tmp_function: Task = self.__get_next_RM_function()
         while self.time < self.hyperperiod:
+            # Compare t function to t-1 function
             function = self.__get_next_RM_function()
+            # Two real functions case
             if function is not None and tmp_function is not None:
-                # New function appears
-                if function.name != tmp_function.name:
+                # Same functions cases
+                if function.name == tmp_function.name:
+                    # The function make on step only (Be aware of preemption)
+                    tmp_function.executed_time += 1
+                else:
+                    # Change of functions (preemption or not). Add the old function
                     self.RM.append(self.Case(tmp_function.name, task_begin_time, self.time - 1,
-                                             self.__get_level(tmp_function.name)))
+                                              self.__get_level(tmp_function.name)))
+                    # Update the starting time of the new arrival function
                     task_begin_time = self.time
-            elif function is not None and tmp_function is None:
+                    # Then try again with nth new one
+                    tmp_function = function
+            # Change from nothing executing to something
+            if function is not None and tmp_function is None:
+                # Add empty case in order to make an empty square in the drawer
                 self.RM.append(self.Case("None", task_begin_time, self.time - 1, -1))
+                # Update the starting time of the new arrival function
                 task_begin_time = self.time
-            elif function is None and tmp_function is not None:
-                tmp_function.executed_time = tmp_function.wcet
-                self.RM.append(self.Case(tmp_function.name, task_begin_time, self.time - 1,
-                                         self.__get_level(tmp_function.name)))
+                tmp_function = function
+            # Change from something to nothing
+            if function is None and tmp_function is not None:
+                # Add old function and update the new one to None
+                self.RM.append(
+                    self.Case(tmp_function.name, task_begin_time, self.time - 1, self.__get_level(tmp_function.name)))
                 task_begin_time = self.time
-            if tmp_function is not None:
-                tmp_function.executed_time += 1
-            tmp_function = function
+                tmp_function = function
+            # Make a step
             self.time += 1
+
 
     # version non préemptive
     def schedule_non_prempt(self):
@@ -87,6 +101,7 @@ class RateMonotonic:
         for function in self.functions:
             if self.time >= (function.period * function.times):
                 function.executed_time = 0
+                function.times += 1
         # From all the functions, get the first one (remember that the list has been ordered) who still has something to execute
         for function in self.functions:
             if function.executed_time < function.wcet:
