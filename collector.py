@@ -3,19 +3,16 @@ import xml.etree.ElementTree as ET
 from math import gcd, ceil
 from drawer import Drawer
 from scheduler import *
-
+from typing import List
 SCALE = 10
 
-
-# Source : stackoverflow.com | I'm not very good at math :)
-def ppcm(list: list[int]):
+def ppcm(list: List[int]):
     lcm = list[0]
     for i in list[1:]:
         lcm = lcm * i // gcd(lcm, i)
     return lcm
 
-
-def get_wcet(file_name: str, functions: list[Function]):
+def get_wcet(file_name: str, functions: List[Function]):
     # Open xml file and extract informations
     tree = ET.parse(file_name)
     root = tree.getroot()
@@ -103,6 +100,7 @@ if __name__ == '__main__':
         periods.sort()
         draw.draw_schedule("RateMonotonic")
 
+    # TODO Make EDF scheduler
     elif args.get("which") == "EDF":
         scheduler = EarliestDeadlineFirst(functions,hyperperiod)
         scheduler.schedule()

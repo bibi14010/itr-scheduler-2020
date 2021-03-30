@@ -1,13 +1,13 @@
 import svgwrite as svg
 from scheduler import RateMonotonic
-
+from typing import List
 
 class Drawer:
     ECHELLE = 50
 
     color = ["forestgreen","goldenrod","indianred","olivedrab","rosybrown","teal","violet"]
 
-    def __init__(self, cases: list[RateMonotonic.Case], periods: list[int], hyperperiod: int):
+    def __init__(self, cases: List[RateMonotonic.Case], periods: List[int], hyperperiod: int):
         self.cases = cases
         self.periods = periods
         self.hyperperiod = hyperperiod
