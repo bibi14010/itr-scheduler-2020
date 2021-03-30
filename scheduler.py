@@ -1,6 +1,6 @@
 from function import Function
 from math import pow
-
+from typing import List
 
 class RateMonotonic:
     class Case:
@@ -11,7 +11,7 @@ class RateMonotonic:
             self.end_time = end_time
             self.level = level
 
-    def __init__(self, functions: list[Function], hyperperiod: int):
+    def __init__(self, functions: List[Function], hyperperiod: int):
         self.functions = functions
         self.hyperperiod = hyperperiod
         self.time = 0
@@ -92,7 +92,7 @@ class EarliestDeadlineFirst:
             self.end_time = end_time
             self.level = level
 
-    def __init__(self, functions: list[Function], hyperperiod: int):
+    def __init__(self, functions: List[Function], hyperperiod: int):
         self.functions = functions
         self.hyperperiod = hyperperiod
         self.time = 0
@@ -136,3 +136,8 @@ class EarliestDeadlineFirst:
         for i in range(len(self.functions)):
             if self.functions[i].name == name:
                 return i
+
+    def EDF_feasibility(self)->bool:
+        for function in self.functions:
+            tmp += function.wcet / function.period
+        return tmp <= 1

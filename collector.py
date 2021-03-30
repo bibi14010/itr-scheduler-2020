@@ -1,21 +1,18 @@
 import argparse
 import xml.etree.ElementTree as ET
-from math import gcd, ceil,lcm
+from math import ceil,gcd
 from drawer import Drawer
 from scheduler import *
-
+from typing import List
 SCALE = 10
 
-
-# Source : stackoverflow.com | I'm not very good at math :)
-def ppcm(list: list[int]):
+def ppcm(list: List[int]):
     lcm = list[0]
     for i in list[1:]:
         lcm = lcm * i // gcd(lcm, i)
     return lcm
 
-
-def get_wcet(file_name: str, functions: list[Function]):
+def get_wcet(file_name: str, functions: List[Function]):
     # Open xml file and extract informations
     tree = ET.parse(file_name)
     root = tree.getroot()
@@ -61,11 +58,11 @@ if __name__ == '__main__':
 
     args = vars(parser.parse_args())
 
-    # Check if all functions have all their informations
-    if len(args['functions']) < 2 or (len(args['functions'][0]) != len(args['functions'][1])):
-        print("Missing parameters. example of command :python3 collector.py -x myfile.xml -f fct1 fct2 -f 100 "
-              "200")
-        exit(-1)
+    # # Check if all functions have all their informations
+    # if len(args['functions']) < 2 or (len(args['functions'][0]) != len(args['functions'][1])):
+    #     print("Missing parameters. example of command :python3 collector.py -x myfile.xml -f fct1 fct2 -f 100 "
+    #           "200")
+    #     exit(-1)
 
     # Total number of analyzed functions
     number = len(args['functions'][0])
