@@ -1,4 +1,4 @@
-class Function:
+class Task:
     def __init__(self, name: str, period: int, deadline: int = 0):
         self.name = name
         if period <= 0:

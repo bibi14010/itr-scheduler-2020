@@ -2,22 +2,23 @@ import svgwrite as svg
 from scheduler import RateMonotonic
 from typing import List
 
+
 class Drawer:
     ECHELLE = 50
 
-    color = ["forestgreen","goldenrod","indianred","olivedrab","rosybrown","teal","violet"]
+    color = ["forestgreen", "goldenrod", "indianred", "olivedrab", "rosybrown", "teal", "violet"]
 
     def __init__(self, cases: List[RateMonotonic.Case], periods: List[int], hyperperiod: int):
         self.cases = cases
         self.periods = periods
         self.hyperperiod = hyperperiod
 
-    def draw_schedule(self, name:str):
+    def draw_schedule(self, name: str):
 
         draw = svg.Drawing(filename=f"{name}.svg", debug=True)
 
         # Draw lines for better convenience
-        for index in range(len(self.periods)+1):
+        for index in range(len(self.periods) + 1):
             x_1 = 0
             y_1 = index * self.ECHELLE
             x_2 = self.hyperperiod
@@ -36,10 +37,10 @@ class Drawer:
                 draw.add(draw.rect((x_1, y_1), (width, height), stroke="black", fill=self.color[case.level]))
                 draw.add(draw.text(case.name, insert=(x_1, y_1 + (self.ECHELLE / 2)), fill="black"))
 
-        #Draw periods for convencience
+        # Draw periods for convencience
         for index in range(len(self.periods)):
             tmp_p = 0
-            while tmp_p <= self.hyperperiod :
+            while tmp_p <= self.hyperperiod:
                 x_1 = tmp_p
                 y_1 = index * self.ECHELLE
                 x_2 = x_1
