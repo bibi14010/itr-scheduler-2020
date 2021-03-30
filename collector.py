@@ -1,6 +1,6 @@
 import argparse
 import xml.etree.ElementTree as ET
-from math import gcd, ceil,lcm
+from math import gcd, ceil
 from drawer import Drawer
 from scheduler import *
 
@@ -96,17 +96,17 @@ if __name__ == '__main__':
         if not scheduler.RM_feasibility():
             print("Feasibility condition not verified. No RM schedule with those parameters.")
             exit(-1)
+        else:
+            print("Feasibility condition verified.")
         scheduler.schedule()
         draw = Drawer(scheduler.RM, periods, hyperperiod)
         periods.sort()
         draw.draw_schedule("RateMonotonic")
 
-    # TODO Make EDF scheduler
     elif args.get("which") == "EDF":
         scheduler = EarliestDeadlineFirst(functions,hyperperiod)
         scheduler.schedule()
         draw = Drawer(scheduler.EDF, periods, hyperperiod)
-        periods.sort()
         draw.draw_schedule("EarliestDeadlineFirst")
 
     exit(0)

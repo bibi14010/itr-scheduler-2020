@@ -7,7 +7,7 @@ class Function:
         self.period = period
         self.wcet = -1
         self.executed_time = 0
-        self.deadline = 0
+        self.deadline = deadline
         self.times = 0
 
     def set_wcet(self, value: int):

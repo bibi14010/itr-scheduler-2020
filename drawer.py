@@ -26,7 +26,6 @@ class Drawer:
 
         # Draw rectangles for visible schedule
         for case in self.cases:
-            print(f"Case {case.name} arriving on {case.begin_time} anf finishing on {case.end_time} with order of {case.level}")
             if case.name == "None":
                 pass
             else:
@@ -39,7 +38,7 @@ class Drawer:
 
         #Draw periods for convencience
         for index in range(len(self.periods)):
-            tmp_p =0
+            tmp_p = 0
             while tmp_p <= self.hyperperiod :
                 x_1 = tmp_p
                 y_1 = index * self.ECHELLE

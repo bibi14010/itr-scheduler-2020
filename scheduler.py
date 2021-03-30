@@ -17,7 +17,7 @@ class RateMonotonic:
         self.time = 0
 
         self.RM = list()  # List of Cases
-
+    # Version préemptive TODO version non-préemptive
     def schedule(self):
         # Sort the list to have higher priorities first
         self.__assign_RM_prio()
@@ -99,8 +99,8 @@ class EarliestDeadlineFirst:
 
         self.EDF = list()  # List of Cases
 
+    # Version non préemptive TODO version prémptive
     def schedule(self):
-
         while self.time < self.hyperperiod:
             function = self.__get_next_EDF_function()
             if function is not None:
@@ -116,7 +116,6 @@ class EarliestDeadlineFirst:
             # New period
             if self.time >= (function.times * function.period):
                 function.executed_time = 0
-                print(f"Reset {function.name} on {self.time} for the {function.times} time.")
 
         tmp_function = None
         tmp_deadline = self.hyperperiod
