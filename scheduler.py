@@ -18,7 +18,7 @@ class RateMonotonic:
 
         self.RM = list()  # List of Cases
 
-    def Schedule(self):
+    def schedule(self):
         # Sort the list to have higher priorities first
         self.__assign_RM_prio()
         task_begin_time = 0
@@ -98,3 +98,35 @@ class EarliestDeadlineFirst:
         self.time = 0
 
         self.EDF = list()  # List of Cases
+
+    def schedule(self):
+
+        while self.time < self.hyperperiod:
+            function = self.__get_next_EDF_function()
+            if function is not None:
+                function.executed_time = function.wcet
+                self.EDF.append(self.Case(function.name, self.time, function.executed_time, self.__get_level(function.name)))
+                self.time += function.wcet
+            else:
+                self.time += 1
+
+
+    def __get_next_EDF_function(self):
+        tmp_function = None
+        tmp_modulo  = self.hyperperiod
+        for function in self.functions:
+            modulo = self.time % function.period
+            if modulo == 0:
+                function.executed_time = 0
+            if modulo != 0 and function.executed_time < function.wcet:
+                if tmp_function is None:
+                    tmp_function = function
+                else:
+                    if tmp_modulo > modulo:
+                        tmp_function = function
+        return tmp_function
+
+    def __get_level(self, name) -> int:
+        for i in range(len(self.functions)):
+            if self.functions[i].name == name:
+                return i

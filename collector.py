@@ -1,6 +1,5 @@
 import argparse
 import xml.etree.ElementTree as ET
-from function import Function
 from math import gcd, ceil
 from drawer import Drawer
 from scheduler import *
@@ -41,11 +40,25 @@ def get_wcet(file_name: str, functions: list[Function]):
 if __name__ == '__main__':
 
     parser = argparse.ArgumentParser()
-    parser.add_argument("-x", "--xml_file", required=True, help="XML file to analyse. e-g: -x TP_HEPTANE-rex.xml.")
-    parser.add_argument("-f", "--functions", required=True, nargs="+", help="Name of the functions to be considered "
+    subparser = parser.add_subparsers()
+
+    rm_parser = subparser.add_parser('RM')
+    rm_parser.set_defaults(which="RM")
+    rm_parser.add_argument("-x", "--xml_file", required=True, help="XML file to analyse. e-g: -x TP_HEPTANE-rex.xml.")
+    rm_parser.add_argument("-f", "--functions", required=True, nargs="+", help="Name of the functions to be considered "
                                                                             "first, then their respective periods in "
                                                                             "ms. e-g: -f fct1 fct2 -f fct1_t fct2_t ",
                         action='append')
+
+    edf_parser = subparser.add_parser("EDF")
+    edf_parser.set_defaults(which="EDF")
+    edf_parser.add_argument("-x", "--xml_file", required=True, help="XML file to analyse. e-g: -x TP_HEPTANE-rex.xml.")
+    edf_parser.add_argument("-f", "--functions", required=True, nargs="+", help="Name of the functions to be considered "
+                                                                            "first, then their respective periods in "
+                                                                            "ms. e-g: -f fct1 fct2 -f fct1_t fct2_t ",
+                        action='append')
+    edf_parser.add_argument("-d", "--deadlines",required=True, nargs="+", help="Respective deadlines of the functions.")
+
     args = vars(parser.parse_args())
 
     # Check if all functions have all their informations
@@ -58,11 +71,18 @@ if __name__ == '__main__':
     number = len(args['functions'][0])
     names = args['functions'][0]
     periods = [ceil(int(i) / SCALE) for i in args['functions'][1]]
+    # If edf is chosen, set deadlines
+    deadlines = None
+    if args.get("which") == "EDF":
+        deadlines = [int(i) for i in args['deadlines']]
+
     # Create Function objects
     functions = list()
     for index in range(number):
-        functions.append(Function(names[index], int(periods[index])))
-
+        if args.get("which") == "EDF":
+            functions.append(Function(names[index], int(periods[index]), int(deadlines[index])))
+        elif args.get("which") == "RM":
+            functions.append(Function(names[index], int(periods[index])))
     # Get Hyperperiod time
     hyperperiod = ppcm(periods)
     print(f"Hypeperiod is {hyperperiod} ms.")
@@ -71,14 +91,23 @@ if __name__ == '__main__':
     get_wcet(args['xml_file'], functions)
 
     # RM schedule
-    scheduler = RateMonotonic(functions, hyperperiod)
-    if not scheduler.RM_feasibility():
-        print("Feasibility condition not verified. No RM schedule with those parameters.")
-        exit(-1)
-    scheduler.Schedule()
+    if args.get("which") == "RM":
+        scheduler = RateMonotonic(functions, hyperperiod)
+        if not scheduler.RM_feasibility():
+            print("Feasibility condition not verified. No RM schedule with those parameters.")
+            exit(-1)
+        scheduler.schedule()
+        draw = Drawer(scheduler.RM, periods, hyperperiod)
+        periods.sort()
+        draw.draw_schedule("RateMonotonic")
 
     # TODO Make EDF scheduler
+    elif args.get("which") == "EDF":
+        scheduler = EarliestDeadlineFirst(functions,hyperperiod)
+        scheduler.schedule()
+        draw = Drawer(scheduler.EDF, periods, hyperperiod)
+        periods.sort()
+        draw.draw_schedule("EarliestDeadlineFirst")
 
-    periods.sort()
-    draw = Drawer(scheduler.RM, periods, hyperperiod)
-    draw.draw_schedule("RateMonotonic")
+    exit(0)
+
