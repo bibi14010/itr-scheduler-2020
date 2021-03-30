@@ -1,6 +1,6 @@
 import argparse
 import xml.etree.ElementTree as ET
-from math import gcd, ceil
+from math import gcd, ceil,lcm
 from drawer import Drawer
 from scheduler import *
 

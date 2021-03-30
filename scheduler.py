@@ -105,26 +105,32 @@ class EarliestDeadlineFirst:
             function = self.__get_next_EDF_function()
             if function is not None:
                 function.executed_time = function.wcet
-                self.EDF.append(self.Case(function.name, self.time, function.executed_time, self.__get_level(function.name)))
+                function.times += 1
+                self.EDF.append(self.Case(function.name, self.time, self.time + function.executed_time, self.__get_level(function.name)))
                 self.time += function.wcet
             else:
                 self.time += 1
 
-
     def __get_next_EDF_function(self):
-        tmp_function = None
-        tmp_modulo  = self.hyperperiod
         for function in self.functions:
-            modulo = self.time % function.period
-            if modulo == 0:
+            # New period
+            if self.time >= (function.times * function.period):
                 function.executed_time = 0
-            if modulo != 0 and function.executed_time < function.wcet:
-                if tmp_function is None:
+                print(f"Reset {function.name} on {self.time} for the {function.times} time.")
+
+        tmp_function = None
+        tmp_deadline = self.hyperperiod
+        for function in self.functions:
+            # The function has something to execute
+            if function.executed_time < function.wcet:
+                # Memorize the function with the shortest absolute deadline
+                if self.__get_next_deadline(function) < tmp_deadline:
+                    tmp_deadline = self.__get_next_deadline(function)
                     tmp_function = function
-                else:
-                    if tmp_modulo > modulo:
-                        tmp_function = function
         return tmp_function
+
+    def __get_next_deadline(self, function: Function):
+        return (function.times * function.period) + function.deadline
 
     def __get_level(self, name) -> int:
         for i in range(len(self.functions)):
