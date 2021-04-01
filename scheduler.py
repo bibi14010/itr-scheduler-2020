@@ -67,7 +67,6 @@ class RateMonotonic:
             # Get the next function and simply add it. No preemption to take care of.
             if function is not None:
                 function.executed_time = function.wcet
-                function.times += 1
                 self.RM.append(self.Case(function.name, self.time, self.time+function.wcet,
                                          self.__get_level(function.name)))
                 # Update clock in consequence
