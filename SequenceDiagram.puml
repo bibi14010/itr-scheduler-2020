@@ -1,0 +1,39 @@
+@startuml
+'https://plantuml.com/sequence-diagram
+title Sequence Diagram - Arbitrary Parameters
+hide unlinked
+
+actor Collector
+control Scheduler
+collections HEPTANE
+control Drawer
+collections SVG
+boundary Exit
+
+activate Collector
+activate HEPTANE
+
+Collector -> Collector : Parse arguments
+Collector -> HEPTANE : Get WCET
+destroy HEPTANE
+Collector -> Collector : compute hyperperiod
+
+
+Collector -> Scheduler : Check feasibility
+activate Scheduler
+hnote over Collector : IF
+Scheduler -[#red]>o Collector :  * no
+Collector -> Exit : 1
+hnote over Collector : ELSE
+Scheduler -[#green]>o Collector :  * yes
+Collector -> Scheduler : schedule
+Scheduler ->o Scheduler : schedule
+Scheduler ->o Collector : schedule result
+
+Collector -> Drawer : draw
+activate Drawer
+Drawer -> SVG : attributes
+activate SVG
+hnote over SVG :Creates the svg file
+Collector -> Exit : 0
+@enduml
