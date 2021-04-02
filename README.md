@@ -22,9 +22,9 @@
 > 
 > **-x [heptane-xml-file] or --xml_file [heptane-xml-file]** , set this parameter in order to specify which heptane file needs to be anlyzed
 > 
-> **-f [functions] or --functions [functions]** , specify a function, or a list of functions (separated by a space) that needs to be analyzed. Also provide for each function the period that needs to be considered
+> **-t [tasks] or --tasks [tasks]** , specify a function, or a list of functions (separated by a space) that needs to be analyzed. Also provide for each function the period that needs to be considered
 > 
-    >       e.g.: ..``-f func1 func2 -f period_func1 period_func2``..
+    >       e.g.: ..``-t task1 task2 -f period_task1 period_task2``..
 >  
 > **-p or --preemption_mode** , specifies if preemptive scheduling needs to be considered or not
 > 
@@ -35,7 +35,8 @@
  
 ## Example
 
-`` python3 collector.py -p 0 RM -x TP_HEPTANE-res.xml -f distance navigation contact -f 1400 1000 1700``
+`` python3 collector.py -p 0 RM -x TP_HEPTANE-res.xml -t distance navigation contact -t 1400 1000 1700``
+
 ## Results
 
     Hypeperiod is 11900 ms.

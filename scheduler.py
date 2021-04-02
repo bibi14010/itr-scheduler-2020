@@ -1,4 +1,4 @@
-from function import Task
+from task import Task
 from math import pow
 from typing import List
 
@@ -12,8 +12,8 @@ class Scheduler:
             self.end_time = end_time
             self.level = level
 
-    def __init__(self, functions: List[Task], hyperperiod: int):
-        self.functions = functions
+    def __init__(self, tasks: List[Task], hyperperiod: int):
+        self.tasks = tasks
         self.hyperperiod = hyperperiod
         # Scheduler virtual clock
         self.time = 0
@@ -32,39 +32,39 @@ class Scheduler:
             tmp_function: Task = self.__get_next_EDF_function()
         task_begin_time = 0
         while self.time < self.hyperperiod:
-            # Compare t function to t-1 function
+            # Compare t task to t-1 task
             if algo == "RM":
-                function = self.__get_next_RM_function()
+                task = self.__get_next_RM_function()
             elif algo == "EDF":
-                function: Task = self.__get_next_EDF_function()
-            # Two real functions case
-            if function is not None and tmp_function is not None:
-                # Same functions cases
-                if function.name == tmp_function.name:
-                    # The function make on step only (Be aware of preemption)
+                task: Task = self.__get_next_EDF_function()
+            # Two real tasks case
+            if task is not None and tmp_function is not None:
+                # Same tasks cases
+                if task.name == tmp_function.name:
+                    # The task make on step only (Be aware of preemption)
                     tmp_function.executed_time += 1
                 else:
-                    # Change of functions (preemption or not). Add the old function
+                    # Change of tasks (preemption or not). Add the old task
                     list_destination.append(self.Case(tmp_function.name, task_begin_time, self.time - 1,
                                                       self.__get_level(tmp_function.name)))
-                    # Update the starting time of the new arrival function
+                    # Update the starting time of the new arrival task
                     task_begin_time = self.time
                     # Then try again with nth new one
-                    tmp_function = function
+                    tmp_function = task
             # Change from nothing executing to something
-            if function is not None and tmp_function is None:
+            if task is not None and tmp_function is None:
                 # Add empty case in order to make an empty square in the drawer
                 list_destination.append(self.Case("None", task_begin_time, self.time - 1, -1))
-                # Update the starting time of the new arrival function
+                # Update the starting time of the new arrival task
                 task_begin_time = self.time
-                tmp_function = function
+                tmp_function = task
             # Change from something to nothing
-            if function is None and tmp_function is not None:
-                # Add old function and update the new one to None
+            if task is None and tmp_function is not None:
+                # Add old task and update the new one to None
                 list_destination.append(
                     self.Case(tmp_function.name, task_begin_time, self.time - 1, self.__get_level(tmp_function.name)))
                 task_begin_time = self.time
-                tmp_function = function
+                tmp_function = task
             # Make a step
             self.time += 1
         # Set final version
@@ -79,18 +79,18 @@ class Scheduler:
         if algo == "RM":
             self.__assign_RM_prio()
         while self.time < self.hyperperiod:
-            function = None
+            task = None
             if algo == "RM":
-                function = self.__get_next_RM_function()
+                task = self.__get_next_RM_function()
             elif algo == "EDF":
-                function = self.__get_next_EDF_function()
-            # Get the next function and simply add it. No preemption to take care of.
-            if function is not None:
-                function.executed_time = function.wcet
-                list_destination.append(self.Case(function.name, self.time, self.time + function.wcet,
-                                                  self.__get_level(function.name)))
+                task = self.__get_next_EDF_function()
+            # Get the next task and simply add it. No preemption to take care of.
+            if task is not None:
+                task.executed_time = task.wcet
+                list_destination.append(self.Case(task.name, self.time, self.time + task.wcet,
+                                                  self.__get_level(task.name)))
                 # Update clock in consequence
-                self.time += function.wcet
+                self.time += task.wcet
             else:
                 # Nothing to do at this time, make the clock have one step
                 self.time += 1
@@ -99,84 +99,84 @@ class Scheduler:
             self.RM = list_destination
         elif algo == "EDF":
             self.EDF = list_destination
-    # Override the functions list in order to have it oreder by the size of function'speriod
+    # Override the tasks list in order to have it oreder by the size of task'speriod
     # Instead of overriding, maybe we should just swaps
     def __assign_RM_prio(self):
         new_list = list()
-        while len(self.functions) != 0:
+        while len(self.tasks) != 0:
             tmp = None
             tmp_function = None
             tmp_index = 0
             index = 0
-            for function in self.functions:
-                if tmp is None or function.period < tmp:
+            for task in self.tasks:
+                if tmp is None or task.period < tmp:
                     tmp_index = index
-                    tmp = function.period
-                    tmp_function = function
+                    tmp = task.period
+                    tmp_function = task
                 index += 1
             new_list.append(tmp_function)
-            self.functions.pop(tmp_index)
-        self.functions = new_list
+            self.tasks.pop(tmp_index)
+        self.tasks = new_list
 
-    # Fetch the next function
+    # Fetch the next task
     def __get_next_RM_function(self):
         # New period -> new instance of execution
-        for function in self.functions:
-            if self.time >= (function.period * function.times):
-                function.executed_time = 0
-                function.times += 1
-        # From all the functions, get the first one (remember that the list has been ordered) who still has something to execute
-        for function in self.functions:
-            if function.executed_time < function.wcet:
-                return function
+        for task in self.tasks:
+            if self.time >= (task.period * task.times):
+                task.executed_time = 0
+                task.times += 1
+        # From all the tasks, get the first one (remember that the list has been ordered) who still has something to execute
+        for task in self.tasks:
+            if task.executed_time < task.wcet:
+                return task
         return None
 
-    # Get the priority of a function (in order to draw it on the correct line)
+    # Get the priority of a task (in order to draw it on the correct line)
     def __get_level(self, name):
-        for i in range(len(self.functions)):
-            if self.functions[i].name == name:
+        for i in range(len(self.tasks)):
+            if self.tasks[i].name == name:
                 return i
 
     # Sufficient condition TODO Necessary condition
     def RM_feasibility(self) -> bool:
-        N = (pow(2, 1 / len(self.functions)) - 1) * len(self.functions)
+        N = (pow(2, 1 / len(self.tasks)) - 1) * len(self.tasks)
         tmp = 0
-        for function in self.functions:
-            tmp += function.wcet / function.period
+        for task in self.tasks:
+            tmp += task.wcet / task.period
         return tmp <= N
 
     def __get_next_EDF_function(self):
-        for function in self.functions:
+        for task in self.tasks:
             # New period -> add one time of execution, set executed time to 0 in the new period
-            if self.time >= (function.times * function.period):
-                function.times += 1
-                function.executed_time = 0
+            if self.time >= (task.times * task.period):
+                task.times += 1
+                task.executed_time = 0
         # Initialisation
         tmp_function = None
         tmp_deadline = self.hyperperiod
-        for function in self.functions:
-            # The function has something to execute
-            if function.executed_time < function.wcet:
-                # Memorize the function with the shortest absolute deadline
-                if self.__get_next_deadline(function) < tmp_deadline:
-                    tmp_deadline = self.__get_next_deadline(function)
-                    tmp_function = function
+        for task in self.tasks:
+            # The task has something to execute
+            if task.executed_time < task.wcet:
+                # Memorize the task with the shortest absolute deadline
+                if self.__get_next_deadline(task) < tmp_deadline:
+                    tmp_deadline = self.__get_next_deadline(task)
+                    tmp_function = task
         return tmp_function
 
     # I think it is sufficiently explicit :3
-    def __get_next_deadline(self, function: Task):
-        if function is None:
+    def __get_next_deadline(self, task: Task):
+        if task is None:
             return -1
-        return (function.times * function.period) + function.deadline
+        return (task.times * task.period) + task.deadline
 
-    # See the same function definition of RM
+    # See the same task definition of RM
     def __get_level(self, name) -> int:
-        for i in range(len(self.functions)):
-            if self.functions[i].name == name:
+        for i in range(len(self.tasks)):
+            if self.tasks[i].name == name:
                 return i
 
 
     def EDF_feasibility(self) -> bool:
-        for function in self.functions:
-            tmp += function.wcet / function.period
+        for task in self.tasks:
+            tmp += task.wcet / task.period
         return tmp <= 1
