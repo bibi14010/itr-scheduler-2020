@@ -2,8 +2,9 @@
 'https://plantuml.com/class-diagram
 title ITR project Class Diagram
 class Collector{
-scheduler : Scheduler
-draw : Drawer
+-SCALE : int
+#scheduler : Scheduler
+#draw : Drawer
 +ppcm()
 +get_wcet()
 +arg_parser()
