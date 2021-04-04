@@ -3,7 +3,7 @@
 
 ## Goal
 
-> The goal of this project is to analyze the scheduling of tasks produced by the OIL file in a trampolineRTOS implementation
+> The goal of this project is to analyze how tasks are scheduled in a simulation of an OIL file 
 > 
 > This script will analyze the results produced by heptane and will then create an image representing the chosen scheduler
 > 
