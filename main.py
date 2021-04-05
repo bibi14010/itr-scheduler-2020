@@ -1,18 +1,21 @@
 import json
 import xml.etree.ElementTree as ET
-from math import ceil,gcd
+from math import ceil, gcd
 from src.task import Task
 from src.drawer import Drawer
 from src.scheduler import Scheduler
+from src.resource import Resource
 from typing import List
 
+SCALE = 10
 
-SCALE=10
+
 def ppcm(list):
     lcm = list[0]
     for i in list[1:]:
         lcm = lcm * i // gcd(lcm, i)
     return lcm
+
 
 def get_wcet(file_name: str, tasks: List[Task]):
     # Open xml file and extract informations
@@ -35,35 +38,44 @@ def get_wcet(file_name: str, tasks: List[Task]):
         # Display object status
         task.display()
 
+
 if __name__ == '__main__':
 
     with open('config.json') as config_file:
         data = json.load(config_file)
 
-
     # Evaluate hyperperiod length
     periods = [int(ceil(data['tasks'][i]['period']) / SCALE) for i in data['tasks'].keys()]
+    print(periods)
     hyperperiod = ppcm(periods)
     print(f"Hypeperiod is {hyperperiod} ms.")
     # Update wcet for each task
     print(f"Starting analysis of {data['file']} on tasks: {data['tasks'].keys()}")
+
+    # Load resources symbols
+    resources = list()
+    for i in data['resources'].keys():
+        resources.append(Resource(i, False))
 
     tasks = list()
     # Check which scheduler has been chosen and act accordingly
     if data['algo'] == "RM":
 
         for i in data['tasks'].keys():
-            tasks.append(Task(i, int(data['tasks'][i]['period'])))
+            tasks.append(Task(i, int(data['tasks'][i]['period']), resources))
+
+        for i in range(0, len(tasks)):
+            tasks[i].set_prio(i)
 
         get_wcet(data['file'], tasks)
 
         scheduler = Scheduler(tasks, hyperperiod)
 
-        if not scheduler.RM_feasibility():
-            print("Feasibility condition not verified. No RM schedule with those parameters.")
+        if not scheduler.rm_necessary_cond():
+            print("Necessary condition for RM not verified.")
             exit(-1)
         else:
-            print("Feasibility condition verified.")
+            print("Necessary condition verified.")
 
         if data['preempt'] == True:
             scheduler.schedule_prempt(data['algo'])
@@ -85,6 +97,12 @@ if __name__ == '__main__':
 
         scheduler = Scheduler(tasks, hyperperiod)
 
+        if not scheduler.edf_necessary_cond():
+            print("Necessary condition for EDF not verified.")
+            exit(-1)
+        else:
+            print("Necessary condition verified.")
+
         if data['preempt'] == True:
             scheduler.schedule_prempt(data['algo'])
         else:
@@ -94,4 +112,3 @@ if __name__ == '__main__':
         draw.draw_schedule(f"EarliestDeadlineFirst")
     else:
         print("Scheduler {algo} not recognized, please chose either RM or EDF.".format(algo=data['algo']))
-

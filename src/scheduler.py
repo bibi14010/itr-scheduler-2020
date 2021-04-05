@@ -2,6 +2,7 @@ from task import Task
 from math import pow
 from typing import List
 
+
 class Scheduler:
     class Case:
         # Case object corresponding in a "square" you draw on your paper when scheduling
@@ -21,15 +22,21 @@ class Scheduler:
 
     # Version préemptive
     def schedule_prempt(self, algo: str):
+
         # Sort the list to have higher priorities first
         list_destination = list()
         tmp_function: Task = None
+
         if algo == "RM":
             self.__assign_RM_prio()
             tmp_function: Task = self.__get_next_RM_function()
         elif algo == "EDF":
+
             tmp_function: Task = self.__get_next_EDF_function()
+
         task_begin_time = 0
+
+
         while self.time < self.hyperperiod:
             # Compare t task to t-1 task
             if algo == "RM":
@@ -136,13 +143,32 @@ class Scheduler:
             if self.tasks[i].name == name:
                 return i
 
-    # Sufficient condition TODO Necessary condition
-    def RM_feasibility(self) -> bool:
-        N = (pow(2, 1 / len(self.tasks)) - 1) * len(self.tasks)
-        tmp = 0
+    # Test if the necessary condition for Rate Monotonic is respected
+    def rm_necessary_cond(self) -> bool:
+        sum = 0
         for task in self.tasks:
-            tmp += task.wcet / task.period
-        return tmp <= N
+            sum += task.wcet / task.period
+        return sum<=1
+    # Test if the sufficient condition for Rate Monotonic is respected
+    def rm_sufficient_cond(self) -> bool:
+        N = (pow(2, 1 / len(self.tasks)) - 1) * len(self.tasks)
+        sum = 0
+        for task in self.tasks:
+            sum += task.wcet / task.period
+        return sum <= N
+    # Test if the necessary condition for Earliest Deadline First is respected
+    def edf_necessary_cond(self) -> bool:
+        sum = 0
+        for task in self.tasks:
+            sum += task.wcet / task.period
+        return sum <= 1
+
+    # Test if the sufficient condition for Earliest Deadline First is respected
+    def edf_sufficient_cond(self) -> bool:
+        sum = 0
+        for task in self.tasks:
+            sum += task.wcet / task.deadline
+        return sum <= 1
 
     def __get_next_EDF_function(self):
         for task in self.tasks:
@@ -179,4 +205,3 @@ class Scheduler:
         for task in self.tasks:
             tmp += task.wcet / task.period
         return tmp <= 1
-
