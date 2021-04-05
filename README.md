@@ -7,7 +7,7 @@
 > 
 > This script will analyze the results produced by heptane and will then create an image representing the chosen scheduler
 > 
-> Here is an overview on how the Program works [overview](diag_alarachepng.png)
+> Here is an overview on how the Program works [overview](./doc/diag_alarachepng.png)
 > 
 
 ## Usage
