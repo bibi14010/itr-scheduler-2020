@@ -1,5 +1,5 @@
 class Resource:
-    def __init__(self, name:str):
+    def __init__(self, name:str, inuse):
         self.name = name
         self.inuse = False
 
@@ -8,6 +8,8 @@ class Resource:
 
     def release_resource(self):
         self.inuse = False
+
+
 
 
 
