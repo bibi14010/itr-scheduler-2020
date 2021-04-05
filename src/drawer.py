@@ -6,7 +6,7 @@ from typing import List
 
 
 class Drawer:
-    ECHELLE = 30
+    EPAISSEUR = 50
 
     color = ["forestgreen", "goldenrod", "indianred", "olivedrab", "rosybrown", "teal", "violet"]
 
