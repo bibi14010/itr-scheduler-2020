@@ -199,9 +199,3 @@ class Scheduler:
         for i in range(len(self.tasks)):
             if self.tasks[i].name == name:
                 return i
-
-
-    def EDF_feasibility(self) -> bool:
-        for task in self.tasks:
-            tmp += task.wcet / task.period
-        return tmp <= 1
