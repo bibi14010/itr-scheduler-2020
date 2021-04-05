@@ -1,4 +1,4 @@
-Class Resource:
+class Resource:
     def __init__(self, name:str):
         self.name = name
         self.inuse = False

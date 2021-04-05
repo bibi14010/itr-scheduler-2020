@@ -69,9 +69,8 @@ if __name__ == '__main__':
             scheduler.schedule_prempt(data['algo'])
         else:
             scheduler.schedule_non_prempt(data['algo'])
-
         # Draw result in svg file
-        draw = Drawer(scheduler.RM, periods, hyperperiod)
+        draw = Drawer(scheduler.output, tasks, hyperperiod)
 
         periods.sort()
 
@@ -90,7 +89,7 @@ if __name__ == '__main__':
         else:
             scheduler.schedule_non_prempt(data['algo'])
 
-        draw = Drawer(scheduler.EDF, periods, hyperperiod)
+        draw = Drawer(scheduler.output, tasks, hyperperiod)
         draw.draw_schedule(f"EarliestDeadlineFirst")
     else:
         print("Scheduler {algo} not recognized, please chose either RM or EDF.".format(algo=data['algo']))
