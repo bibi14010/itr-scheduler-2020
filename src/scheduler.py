@@ -165,10 +165,3 @@ class Scheduler:
         if task is None:
             return -1
         return (task.times * task.period) + task.deadline
-
-    # See the same task definition of RM
-    def __get_level(self, name) -> int:
-        for i in range(len(self.tasks)):
-            if self.tasks[i].name == name:
-                return i
-
