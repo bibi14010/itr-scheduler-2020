@@ -5,6 +5,7 @@ hide unlinked
 
 actor Collector
 control Scheduler
+collections JSON
 collections HEPTANE
 control Drawer
 collections SVG
@@ -12,8 +13,10 @@ boundary Exit
 
 activate Collector
 activate HEPTANE
+activate JSON
 
-Collector -> Collector : Parse arguments
+Collector -> JSON : Get configuration
+destroy JSON
 Collector -> HEPTANE : Get WCET
 destroy HEPTANE
 Collector -> Collector : compute hyperperiod
