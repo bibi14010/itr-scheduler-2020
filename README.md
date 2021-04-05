@@ -3,39 +3,23 @@
 
 ## Goal
 
-> The goal of this project is to analyze the scheduling of tasks produced by the OIL file in a trampolineRTOS implementation
+> The goal of this project is to analyze how tasks are scheduled in a simulation of an OIL file 
 > 
 > This script will analyze the results produced by heptane and will then create an image representing the chosen scheduler
 > 
-> Here is an overview on how the Program works [overview](diag_alarachepng.png)
+> Here is an overview on how the Program works [overview](./doc/diag_alarachepng.png)
 > 
 
 ## Usage
 
+> A config file is provided with the script in order to set parameters for the analysis
+> 
+> Please setup the **config.json** accordingly before launching the script
+> 
 > In order to run the script, in a terminal type
 > 
->  ``python3 collector.py {RM, EDF} -x [heptane-xml-file] -f [functions] ``
+>  ``python3 main.py ``
 >
-> Options details :
-> 
-> Choose a mode from **RM** and **EDF** in order to perform a specific schedulability analysis
-> 
-> **-x [heptane-xml-file] or --xml_file [heptane-xml-file]** , set this parameter in order to specify which heptane file needs to be anlyzed
-> 
-> **-t [tasks] or --tasks [tasks]** , specify a function, or a list of functions (separated by a space) that needs to be analyzed. Also provide for each function the period that needs to be considered
-> 
-    >       e.g.: ..``-t task1 task2 -f period_task1 period_task2``..
->  
-> **-p or --preemption_mode** , specifies if preemptive scheduling needs to be considered or not
-> 
-### Specific options for EDF
->
-> **-d [deadlines]** , specifies the deadlines to be considered for EDF scheduling
->
- 
-## Example
-
-`` python3 collector.py -p 0 RM -x TP_HEPTANE-res.xml -t distance navigation contact -t 1400 1000 1700``
 
 ## Results
 
