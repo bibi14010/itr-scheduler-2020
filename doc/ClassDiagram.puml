@@ -1,7 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 title ITR project Class Diagram
-class Collector{
+class main{
 -SCALE : int
 #scheduler : Scheduler
 #draw : Drawer
@@ -17,7 +17,9 @@ class Task{
 #wcet : int
 #executed_time : int
 #time : int
+# resources : List[Task]
 
++get_current_prio()
 +set_wcet()
 +display()
 }
@@ -57,17 +59,32 @@ object Case {
     #level : int
 }
 
+class Resource {
+#name : str
+#working_task : Task
+
++get_resource()
++release_resource()
+}
+
+object JSON {
+    json attributes
+}
+
 object HEPTANE{
     xml attributes
 }
 object SVG {
     svg attributes
 }
-Collector <|-- Scheduler
-Collector <|-- Drawer
+main <|-- Scheduler
+main <|-- Drawer
 Scheduler <|--* Task
-Scheduler <|--* Case
+Drawer <|--* Case
+Resource *-|> main
+Resource *-|> Task
 
-HEPTANE --> Collector
-Collector -> SVG
+HEPTANE --> main
+JSON --> main
+main -> SVG
 @enduml
