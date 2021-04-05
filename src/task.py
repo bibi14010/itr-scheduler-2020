@@ -1,11 +1,13 @@
 class Task:
     def __init__(self, name: str,period: int, resources, deadline: int = 0):
         self.name = name
-        self.prio = 0
+        # En cas d'inverion de priorité, la priorité intiale sera en bout de liste
         if period <= 0:
             print(f"Invalid Period in Function object {self.name}.")
             exit(-1)
         self.period = period
+        self.prio :list[int]= list()
+        self.prio.append(self.period)
         self.deadline = deadline
         self.resource = resources
         self.wcet = -1
@@ -21,4 +23,7 @@ class Task:
         print(f"NAME : {self.name} ; PRIORITY: {self.period} PERIOD : {self.period} ; WCET : {self.wcet}")
 
     def set_prio(self, new_prio):
-        self.prio = new_prio
+        self.prio.append(new_prio)
+
+    def get_current_prio(self):
+        return self.prio[len(self.prio)-1]

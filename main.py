@@ -46,7 +46,6 @@ if __name__ == '__main__':
 
     # Evaluate hyperperiod length
     periods = [int(ceil(data['tasks'][i]['period']) / SCALE) for i in data['tasks'].keys()]
-    print(periods)
     hyperperiod = ppcm(periods)
     print(f"Hypeperiod is {hyperperiod} ms.")
     # Update wcet for each task
@@ -55,14 +54,17 @@ if __name__ == '__main__':
     # Load resources symbols
     resources = list()
     for i in data['resources'].keys():
-        resources.append(Resource(i, False))
+        resources.append(Resource(i))
 
     tasks = list()
     # Check which scheduler has been chosen and act accordingly
     if data['algo'] == "RM":
 
         for i in data['tasks'].keys():
-            tasks.append(Task(i, int(data['tasks'][i]['period']), resources))
+            task_resources = list()
+            for j in data['tasks'][i]['resources']:
+                task_resources = [resource for resource in resources if resource.name == j]
+            tasks.append(Task(i, int(data['tasks'][i]['period']), task_resources))
 
         for i in range(0, len(tasks)):
             tasks[i].set_prio(i)
@@ -84,13 +86,14 @@ if __name__ == '__main__':
         # Draw result in svg file
         draw = Drawer(scheduler.output, tasks, hyperperiod)
 
-        periods.sort()
-
         draw.draw_schedule(f"RateMonotonic")
     elif data['algo'] == "EDF":
 
         for i in data['tasks'].keys():
-            tasks.append(Task(i, int(data['tasks'][i]['period']), int(data['tasks'][i]['deadline'])))
+            task_resources = list()
+            for j in data['tasks'][i]['resources']:
+                task_resources = [resource for resource in resources if resource.name == j]
+            tasks.append(Task(i, int(data['tasks'][i]['period']), task_resources, deadline=int(data['tasks'][i]['deadline'])))
 
         get_wcet(data['file'], tasks)
 

@@ -1,33 +1,32 @@
 {
     "algo":"RM",
     "file":"TP_HEPTANE-res.xml",
-    "preempt" : false,
+    "preempt" : true,
     "resources":{
         "Resource_1" : "on",
         "Resource_2" : "on"
     },
     "tasks" :{
         "distance":{
-            "period" : 1400,
-            "deadline":1400,
+            "period" : 140,
+            "deadline":140,
             "resources":{
-                "Resource_1" : true,
-                "Resource_2" : false
-            }
-        },
-        "navigation":{
-            "period":1000,
-            "deadline":1000,
-            "resources":{
-                "Resource_1" : false,
+                "Resource_1": true,
                 "Resource_2" : true
             }
         },
-        "contact":{
-            "period":1700,
-            "deadline":1700,
+        "navigation":{
+            "period":100,
+            "deadline":100,
             "resources":{
-                "Resource_1" :true,
+                "Resource_1" : true
+            }
+        },
+        "contact":{
+            "period":170,
+            "deadline":170,
+            "resources":{
+                "Resource_1" : true,
                 "Resource_2" : true
             }
         }
